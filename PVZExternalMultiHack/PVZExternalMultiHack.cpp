@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <TlHelp32.h>
+#include "memory.h"
 
 // global options
 struct sHacks
@@ -66,6 +67,10 @@ int main()
     // get handle to pvz
     HANDLE hPVZ{OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID)};
 
+    // test aob scan with autocollect items
+    DWORD autoAddy {SigScan(hPVZ, me32, std::vector<int>{0x75, -1, 0x8b, 0xfb, 0xe8, -1, -1, -1, -1, 0xeb})};
+    std::cout << "Auto addy is: " << std::hex << autoAddy << '\n';
+    
     // start hack loop
     for (;;)
     {
