@@ -40,6 +40,28 @@ int main()
 
     // display information on the process
     std::wcout << "PVZ Process ID: " << pe32.th32ProcessID << '\n' << "Process name: " << pe32.szExeFile << '\n';
+    
+    // find pvz module base address
+    HANDLE hModSnapshot {CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pe32.th32ProcessID)};
+    uintptr_t pvzBaseAddr {};
+
+    // create moduleentry struct and initialize dwSize according to msdn
+    MODULEENTRY32 me32{};
+    me32.dwSize = sizeof(MODULEENTRY32);
+
+    // loop through all the modules in hModSnapshot
+    do
+    {
+        if (!_wcsicmp(me32.szModule, pe32.szExeFile)) break;
+    }
+    while (Module32Next(hModSnapshot, &me32));
+    CloseHandle(hModSnapshot);
+
+    // module has been found
+    pvzBaseAddr = reinterpret_cast<uintptr_t>(me32.modBaseAddr);
+
+    // display module base address
+    std::cout << "PVZ mod base address at: " << std::hex << pvzBaseAddr << '\n';
 
     // get handle to pvz
     HANDLE hPVZ{OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID)};
@@ -132,6 +154,7 @@ int main()
         else
         {
         }
+        break;
     }
 
     CloseHandle(hPVZ);
