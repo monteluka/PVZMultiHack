@@ -41,10 +41,10 @@ int main()
 
     // display information on the process
     std::wcout << "PVZ Process ID: " << pe32.th32ProcessID << '\n' << "Process name: " << pe32.szExeFile << '\n';
-    
+
     // find pvz module base address
-    HANDLE hModSnapshot {CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pe32.th32ProcessID)};
-    uintptr_t pvzBaseAddr {};
+    HANDLE hModSnapshot{CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pe32.th32ProcessID)};
+    uintptr_t pvzBaseAddr{};
 
     // create moduleentry struct and initialize dwSize according to msdn
     MODULEENTRY32 me32{};
@@ -68,98 +68,29 @@ int main()
     HANDLE hPVZ{OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID)};
 
     // test aob scan with autocollect items
-    DWORD autoAddy {SigScan(hPVZ, me32, std::vector<int>{0x75, -1, 0x8b, 0xfb, 0xe8, -1, -1, -1, -1, 0xeb})};
+    DWORD autoAddy{SigScan(hPVZ, me32, std::vector<int> {0x75, -1, 0x8B, -1, 0xE8, -1, -1, -1, -1, 0xEB, -1, 0x8B, -1, 0xE8, -1, -1, -1, -1, 0x83})};
     std::cout << "Auto addy is: " << std::hex << autoAddy << '\n';
-    
+
     // start hack loop
     for (;;)
     {
         // skeleton for hacks
-        if (hacks.autoCollectItems)
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('1') & 0x8000)
         {
+            hacks.autoCollectItems = !hacks.autoCollectItems;
+            if (hacks.autoCollectItems)
+            {
+                std::cout << "Autocollect items hack activated" << std::endl;
+                WriteProcessMemory(hPVZ, reinterpret_cast<LPVOID>(autoAddy), "\xeb", 1, nullptr);
+            }
+            else
+            {
+                std::cout << "Autocollect items hack deactivated" << std::endl;;
+                WriteProcessMemory(hPVZ, reinterpret_cast<LPVOID>(autoAddy), "\x75", 1, nullptr);
+            }
         }
-        else
-        {
-        }
-        if (hacks.bypassSunLimit)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.fastSunProduction)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.hitAnywhere)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.infiniteCoins)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.infiniteLawnMower)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.infiniteSun)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.instantActivatePotatoMine)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.infinitePlantHealth)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.instantPlantRecharge)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.noChomperCooldown)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.noPlantRestriction)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.noZombies)
-        {
-        }
-        else
-        {
-        }
-        if (hacks.oneHitKills)
-        {
-        }
-        else
-        {
-        }
-        break;
+        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
+        Sleep(100);
     }
 
     CloseHandle(hPVZ);
