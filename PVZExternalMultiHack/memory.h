@@ -5,4 +5,4 @@
 #include <vector>
 #include <iostream>
 
-DWORD SigScan(const HANDLE& gameHandle, const MODULEENTRY32W& me32, std::vector<int> sig);
+DWORD SigScan(const HANDLE& gameHandle, const MODULEENTRY32W& me32, const std::vector<WORD>& sig);
