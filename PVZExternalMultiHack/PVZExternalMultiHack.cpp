@@ -1,26 +1,9 @@
 #include <iostream>
 #include <Windows.h>
 #include <TlHelp32.h>
-#include "memory.h"
 
-// global options
-struct sHacks
-{
-    bool autoCollectItems{false};
-    bool bypassSunLimit{false};
-    bool fastSunProduction{false};
-    bool hitAnywhere{false};
-    bool infiniteCoins{false};
-    bool infiniteLawnMower{false};
-    bool infiniteSun{false};
-    bool infinitePlantHealth{false};
-    bool instantActivatePotatoMine{false};
-    bool instantPlantRecharge{false};
-    bool noChomperCooldown{false};
-    bool noPlantRestriction{false};
-    bool noZombies{false};
-    bool oneHitKills{false};
-} hacks;
+#include "gameinfo.h"
+#include "memory.h"
 
 int main()
 {
@@ -44,7 +27,6 @@ int main()
 
     // find pvz module base address
     HANDLE hModSnapshot{CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pe32.th32ProcessID)};
-    uintptr_t pvzBaseAddr{};
 
     // create moduleentry struct and initialize dwSize according to msdn
     MODULEENTRY32 me32{};
@@ -58,18 +40,12 @@ int main()
     while (Module32Next(hModSnapshot, &me32));
     CloseHandle(hModSnapshot);
 
-    // module has been found
-    pvzBaseAddr = reinterpret_cast<uintptr_t>(me32.modBaseAddr);
+    // create GameInfo class for PVZ
+    GameInfo infoPVZ{OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID), me32};
 
     // display module base address
-    std::cout << "PVZ mod base address at: " << std::hex << pvzBaseAddr << '\n';
-
-    // get handle to pvz
-    HANDLE hPVZ{OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID)};
-
-    // test aob scan with autocollect items
-    DWORD autoAddy{SigScan(hPVZ, me32, std::vector<int> {0x75, -1, 0x8B, -1, 0xE8, -1, -1, -1, -1, 0xEB, -1, 0x8B, -1, 0xE8, -1, -1, -1, -1, 0x83})};
-    std::cout << "Auto addy is: " << std::hex << autoAddy << '\n';
+    std::cout << "PVZ mod base address at: " << std::hex << infoPVZ.getModuleBaseAddress() << '\n';
+    std::cout << "Auto addy is: " << std::hex << hacks.autoCollectItems.second << '\n';
 
     // start hack loop
     for (;;)
@@ -77,22 +53,23 @@ int main()
         // skeleton for hacks
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('1') & 0x8000)
         {
-            hacks.autoCollectItems = !hacks.autoCollectItems;
-            if (hacks.autoCollectItems)
+            hacks.autoCollectItems.first = !hacks.autoCollectItems.first;
+            if (hacks.autoCollectItems.first)
             {
                 std::cout << "Autocollect items hack activated" << std::endl;
-                WriteProcessMemory(hPVZ, reinterpret_cast<LPVOID>(autoAddy), "\xeb", 1, nullptr);
+                WriteProcessMemory(infoPVZ.getRefToHandle(),
+                                   reinterpret_cast<uintptr_t*>(hacks.autoCollectItems.second), "\xeb", 1, nullptr);
             }
             else
             {
                 std::cout << "Autocollect items hack deactivated" << std::endl;;
-                WriteProcessMemory(hPVZ, reinterpret_cast<LPVOID>(autoAddy), "\x75", 1, nullptr);
+                WriteProcessMemory(infoPVZ.getRefToHandle(),
+                                   reinterpret_cast<uintptr_t*>(hacks.autoCollectItems.second), "\x75", 1, nullptr);
             }
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
         Sleep(100);
     }
 
-    CloseHandle(hPVZ);
     return 0;
 }
