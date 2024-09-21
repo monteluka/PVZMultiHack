@@ -5,7 +5,8 @@
 #include "gameinfo.h"
 #include "memory.h"
 
-inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName, const char* newBytes, const size_t& newBytesLen, const char* oldBytes, const size_t& oldBytesLen);
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName,
+                       const char* newBytes, const char* oldBytes, const size_t& bytesLen);
 
 int main()
 {
@@ -55,19 +56,69 @@ int main()
         // skeleton for hacks
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('1') & 0x8000)
         {
-            hacks.autoCollectItems.first = !hacks.autoCollectItems.first;
-            if (hacks.autoCollectItems.first)
-            {
-                std::cout << "Autocollect items hack activated" << std::endl;
-                WriteProcessMemory(infoPVZ.getRefToHandle(),
-                                   reinterpret_cast<uintptr_t*>(hacks.autoCollectItems.second), "\xeb", 1, nullptr);
-            }
-            else
-            {
-                std::cout << "Autocollect items hack deactivated" << std::endl;;
-                WriteProcessMemory(infoPVZ.getRefToHandle(),
-                                   reinterpret_cast<uintptr_t*>(hacks.autoCollectItems.second), "\x75", 1, nullptr);
-            }
+            toggleHack(infoPVZ.getRefToHandle(), hacks.autoCollectItems, "Auto collect items", "\xeb", "\x75", 1);
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('2') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.bypassSunLimit, "Bypass sun limit", "\xeb", "\x7e", 1);
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('3') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.fastSunProduction, "Fast sun production", "", "", 0);
+            // requires code cave - not done
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('4') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.instantHit, "Hit from anywhere", "\x90\x90", "\x7c\x1b", 2);
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('5') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteCoins, "Infinite Coins", "", "", 0); // need to find addy
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('6') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteLawnMower, "Infinite lawn mower",
+                       "\x90\x90\x90\x90\x90\x90\x90", "\xc7\x46\x2c\x02\x00\x00\x00", 7);
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('7') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteSun, "Infinite Sun", "", "", 0);
+            // need to find code cave
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('8') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.infinitePlantHealth, "Infinite plant health", "", "", 0);
+            // multi address
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('9') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.instantActivatePotatoMine, "Instant activate potato mine",
+                       "\x90\x90\x90\x90\x90\x90",
+                       "\x0f\x85\xfd\x01\x00\x00", 6);
+        }
+        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('1') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.instantPlantRecharge, "Instant plant recharge", "", "", 0);
+            // need code cave
+        }
+        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('2') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.noChomperCooldown, "No chomper cooldown", "\x90\x90", "\x75\x5f",
+                       2);
+        }
+        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('3') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.plantAnywhere, "Plant anywhere", "\x0F\x84",
+                       "\x0F\x85", 2);
+        }
+        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('4') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.noZombies, "No zombies", "", "", 0); // need to find code cave
+        }
+        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('5') & 0x8000)
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.oneHitKills, "One hit kills", "", "", 0);
+            // multiple addresses and need to find code cave
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
         Sleep(100);
@@ -76,17 +127,18 @@ int main()
     return 0;
 }
 
-inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName, const char* newBytes, const size_t& newBytesLen, const char* oldBytes, const size_t& oldBytesLen)
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName,
+                       const char* newBytes, const char* oldBytes, const size_t& bytesLen)
 {
-	hackOption.first = !hackOption.first;
-	if (hackOption.first)
-	{
-		std::cout << hackName << " hack activated" << std::endl;
-		WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), newBytes, newBytesLen, nullptr);
-	}
-	else
-	{
-		std::cout << hackName << " hack deactivated" << std::endl;;
-		WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, oldBytesLen, nullptr);
-	}
+    hackOption.first = !hackOption.first;
+    if (hackOption.first)
+    {
+        std::cout << hackName << " hack activated" << std::endl;
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), newBytes, bytesLen, nullptr);
+    }
+    else
+    {
+        std::cout << hackName << " hack deactivated" << std::endl;;
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, bytesLen, nullptr);
+    }
 }
