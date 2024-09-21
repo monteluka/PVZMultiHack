@@ -12,18 +12,23 @@ GameInfo::GameInfo(HANDLE hPVZ, MODULEENTRY32W mPVZ32) : m_hPVZ(hPVZ), m_mPVZ32(
                                               0xFFFF, 0xFFFF, 0x81
                                           });
     hacks.fastSunProduction.second = SigScan(hPVZ, m_mPVZ32, {0xFF, 0x4F, 0x58, 0x8B, 0x77, 0x58});
-    hacks.hitAnywhere.second = SigScan(hPVZ, m_mPVZ32, {0x7C, 0x1B, 0x83, 0x7C, 0x24, 0x18, 0x00});
+    hacks.instantHit.second = SigScan(hPVZ, m_mPVZ32, {0x7C, 0x1B, 0x83, 0x7C, 0x24, 0x18, 0x00});
     hacks.infiniteCoins.second = SigScan(hPVZ, m_mPVZ32, {
                                              0x8B, 0x41, 0xFFFF, 0x8D, 0x7C, 0xFFFF, 0xFFFF, 0xE8, 0xFFFF, 0xFFFF,
                                              0xFFFF, 0xFFFF, 0xC7, 0xFFFF, 0xFFFF, 0xFFFF, 0x00, 0x00, 0x00, 0x00, 0x8B
                                          });
-    hacks.infiniteLawnMower.second = SigScan(hPVZ, m_mPVZ32, {});
+    hacks.infiniteLawnMower.second = SigScan(hPVZ, m_mPVZ32, {
+                                                 0xc7, 0x46, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x5f, 0x83, 0xc4
+                                             });
     hacks.infiniteSun.second = SigScan(hPVZ, m_mPVZ32, {0x8B, 0x87, 0x78, 0x55, 0x00, 0x00});
     hacks.infinitePlantHealth.second = SigScan(hPVZ, m_mPVZ32, {});
-    hacks.instantActivatePotatoMine.second = SigScan(hPVZ, m_mPVZ32, {0x0F, 0x85, 0xFD, 0x01, 0x00, 0x00});
+    hacks.instantActivatePotatoMine.second = SigScan(hPVZ, m_mPVZ32, {
+                                                         0x0f, 0x85, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x8b, 0x47, 0xFFFF,
+                                                         0x6a, 0xFFFF, 0x50
+                                                     });
     hacks.instantPlantRecharge.second = SigScan(hPVZ, m_mPVZ32, {0xFF, 0x47, 0x24, 0x8B, 0x47, 0x24});
     hacks.noChomperCooldown.second = SigScan(hPVZ, m_mPVZ32, {0x75, 0x5F, 0x6A, 0x14, 0x56});
-    hacks.noPlantRestriction.second = SigScan(hPVZ, m_mPVZ32, {0x0F, 0x85, 0xA9, 0x04, 0x00, 0x00});
+    hacks.plantAnywhere.second = SigScan(hPVZ, m_mPVZ32, {0x0F, 0x85, 0xA9, 0x04, 0x00, 0x00});
     hacks.noZombies.second = SigScan(hPVZ, m_mPVZ32, {
                                          0x8B, 0x46, 0x14, 0xC1, 0xE0, 0x10, 0x0B, 0xC3, 0x89, 0x87, 0x64
                                      });
