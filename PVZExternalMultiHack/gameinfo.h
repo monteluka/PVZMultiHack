@@ -3,7 +3,7 @@
 
 // bool will determine if hack is enabled or enabled
 // uinptr_t holds the location in memory that stores the bytes we want to modify for the hack
-inline struct m_sHacks
+inline struct sHacks
 {
     std::pair<bool, uintptr_t> autoCollectItems{false, 0};
     std::pair<bool, uintptr_t> bypassSunLimit{false, 0};

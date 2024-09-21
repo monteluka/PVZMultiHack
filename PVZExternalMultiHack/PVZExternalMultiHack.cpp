@@ -5,6 +5,8 @@
 #include "gameinfo.h"
 #include "memory.h"
 
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName, const char* newBytes, const size_t& newBytesLen, const char* oldBytes, const size_t& oldBytesLen);
+
 int main()
 {
     // get process id
@@ -72,4 +74,19 @@ int main()
     }
 
     return 0;
+}
+
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName, const char* newBytes, const size_t& newBytesLen, const char* oldBytes, const size_t& oldBytesLen)
+{
+	hackOption.first = !hackOption.first;
+	if (hackOption.first)
+	{
+		std::cout << hackName << " hack activated" << std::endl;
+		WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), newBytes, newBytesLen, nullptr);
+	}
+	else
+	{
+		std::cout << hackName << " hack deactivated" << std::endl;;
+		WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, oldBytesLen, nullptr);
+	}
 }
