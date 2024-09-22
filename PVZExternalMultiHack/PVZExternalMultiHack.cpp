@@ -1,3 +1,4 @@
+#include <array>
 #include <iostream>
 #include <Windows.h>
 #include <TlHelp32.h>
@@ -50,6 +51,27 @@ int main()
     std::cout << "PVZ mod base address at: " << std::hex << infoPVZ.getModuleBaseAddress() << '\n';
     std::cout << "Auto addy is: " << std::hex << hacks.autoCollectItems.second << '\n';
 
+    // allocate memory for hacks with extra instructions
+    uintptr_t fastSunProductionAllocatedMem{
+        reinterpret_cast<uintptr_t>(VirtualAllocEx(infoPVZ.getRefToHandle(), nullptr, 1000,
+                       MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE))
+    };
+
+    // get the jump to alloc instructions
+    std::array<BYTE, 7> fastSunProductionHookInstruction {"\xe9\xff\xff\xff\xff\x90"};
+    uintptr_t offsetToAllocatedMem {fastSunProductionAllocatedMem - hacks.fastSunProduction.second - 5};
+    memcpy(&fastSunProductionHookInstruction[1], &offsetToAllocatedMem, sizeof(uintptr_t));
+
+    // get new code
+    std::array<BYTE, 19> fastSunProductionJumpBackInstruction {"\xC7\x47\x58\x01\x00\x00\x00\xFF\x4F\x58\x8B\x77\x58\xE9\xFF\xFF\xFF\xFF"};
+    // calculate the offset to original jump instruction
+    uintptr_t jumpBackAddress {hacks.fastSunProduction.second - fastSunProductionAllocatedMem - 18 + 6};
+    memcpy(&fastSunProductionJumpBackInstruction[14], &jumpBackAddress, sizeof(uintptr_t));
+    WriteProcessMemory(infoPVZ.getRefToHandle(), reinterpret_cast<uintptr_t*>(fastSunProductionAllocatedMem), &fastSunProductionJumpBackInstruction, 18, nullptr);
+
+    // remove allocated memory
+    VirtualFreeEx(infoPVZ.getRefToHandle(), reinterpret_cast<uintptr_t*>(fastSunProductionAllocatedMem), 0, MEM_RELEASE);
+
     // start hack loop
     for (;;)
     {
@@ -64,12 +86,13 @@ int main()
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('3') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.fastSunProduction, "Fast sun production", "", "", 0);
+            toggleHack(infoPVZ.getRefToHandle(), hacks.fastSunProduction, "Fast sun production", reinterpret_cast<char*>(&fastSunProductionHookInstruction),
+                       "\xff\x4f\x58\x8b\x77\x58", 6);
             // requires code cave - not done
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('4') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.instantHit, "Hit from anywhere", "\x90\x90", "\x7c\x1b", 2);
+            toggleHack(infoPVZ.getRefToHandle(), hacks.instantHit, "Instant hit", "\x90\x90", "\x7c\x1b", 2);
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('5') & 0x8000)
         {
