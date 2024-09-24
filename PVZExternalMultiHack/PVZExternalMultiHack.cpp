@@ -8,6 +8,9 @@
 
 inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName,
                        const char* newBytes, const char* oldBytes, const size_t& bytesLen);
+inline void toggleHackWithHook(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
+                               const char* hackName, const char* oldBytes,
+                               const size_t& bytesLen);
 
 int main()
 {
@@ -51,26 +54,15 @@ int main()
     std::cout << "PVZ mod base address at: " << std::hex << infoPVZ.getModuleBaseAddress() << '\n';
     std::cout << "Auto addy is: " << std::hex << hacks.autoCollectItems.second << '\n';
 
-    // allocate memory for hacks with extra instructions
-    uintptr_t fastSunProductionAllocatedMem{
-        reinterpret_cast<uintptr_t>(VirtualAllocEx(infoPVZ.getRefToHandle(), nullptr, 1000,
-                       MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE))
-    };
-
-    // get the jump to alloc instructions
-    std::array<BYTE, 7> fastSunProductionHookInstruction {"\xe9\xff\xff\xff\xff\x90"};
-    uintptr_t offsetToAllocatedMem {fastSunProductionAllocatedMem - hacks.fastSunProduction.second - 5};
-    memcpy(&fastSunProductionHookInstruction[1], &offsetToAllocatedMem, sizeof(uintptr_t));
-
-    // get new code
-    std::array<BYTE, 19> fastSunProductionJumpBackInstruction {"\xC7\x47\x58\x01\x00\x00\x00\xFF\x4F\x58\x8B\x77\x58\xE9\xFF\xFF\xFF\xFF"};
-    // calculate the offset to original jump instruction
-    uintptr_t jumpBackAddress {hacks.fastSunProduction.second - fastSunProductionAllocatedMem - 18 + 6};
-    memcpy(&fastSunProductionJumpBackInstruction[14], &jumpBackAddress, sizeof(uintptr_t));
-    WriteProcessMemory(infoPVZ.getRefToHandle(), reinterpret_cast<uintptr_t*>(fastSunProductionAllocatedMem), &fastSunProductionJumpBackInstruction, 18, nullptr);
-
-    // remove allocated memory
-    VirtualFreeEx(infoPVZ.getRefToHandle(), reinterpret_cast<uintptr_t*>(fastSunProductionAllocatedMem), 0, MEM_RELEASE);
+    // instantiate hook info structs for hacks that require custom code to run
+    sHookInfo hiFastSunProduction("\xe9\xff\xff\xff\xff\x90", 6,
+                                  "\xC7\x47\x58\x01\x00\x00\x00\xFF\x4F\x58\x8B\x77\x58\xE9\xFF\xFF\xFF\xFF", 18);
+    sHookInfo hiInfiniteSun("\xe9\xff\xff\xff\xff\x90", 6,
+                            "\xC7\x87\x78\x55\x00\x00\x0F\x27\x00\x00\x8B\x87\x78\x55\x00\x00\xE9\xFF\xFF\xFF\xFF", 21);
+    sHookInfo hiInstantPlantRecharge("\xe9\xff\xff\xff\xff\x90", 6,
+                                     "\x81\x47\x24\x00\x02\x00\x00\x8B\x47\x24\xE9\xFF\xFF\xFF\xFF", 15);
+    sHookInfo hiNoZombies("\xe9\xff\xff\xff\xff\x90", 6,
+                          "\xB8\x00\x00\x00\x00\xC1\xE0\x10\xE9\xFF\xFF\xFF\xFF", 13);
 
     // start hack loop
     for (;;)
@@ -86,9 +78,9 @@ int main()
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('3') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.fastSunProduction, "Fast sun production", reinterpret_cast<char*>(&fastSunProductionHookInstruction),
-                       "\xff\x4f\x58\x8b\x77\x58", 6);
-            // requires code cave - not done
+            toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.fastSunProduction, hiFastSunProduction,
+                               "Fast sun production",
+                               "\xFF\x4F\x58\x8B\x77\x58", 6);
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('4') & 0x8000)
         {
@@ -105,13 +97,13 @@ int main()
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('7') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteSun, "Infinite Sun", "", "", 0);
-            // need to find code cave
+            toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.infiniteSun, hiInfiniteSun, "Infinite sun",
+                               "\x8B\x87\x78\x55\x00\x00", 6);
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('8') & 0x8000)
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.infinitePlantHealth, "Infinite plant health", "", "", 0);
-            // multi address
+            // multi address - not yet implemented
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('9') & 0x8000)
         {
@@ -121,8 +113,8 @@ int main()
         }
         if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('1') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.instantPlantRecharge, "Instant plant recharge", "", "", 0);
-            // need code cave
+            toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.instantPlantRecharge, hiInstantPlantRecharge,
+                               "Instant plant recharge", "\xFF\x47\x24\x8B\x47\x24", 6);
         }
         if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('2') & 0x8000)
         {
@@ -136,12 +128,13 @@ int main()
         }
         if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('4') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.noZombies, "No zombies", "", "", 0); // need to find code cave
+            toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.noZombies, hiNoZombies, "No zombies",
+                               "\x8B\x46\x14\xC1\xE0\x10", 6);
         }
         if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('5') & 0x8000)
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.oneHitKills, "One hit kills", "", "", 0);
-            // multiple addresses and need to find code cave
+            // multi address - not yet implemented
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
         Sleep(100);
@@ -161,6 +154,50 @@ inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hac
     }
     else
     {
+        std::cout << hackName << " hack deactivated" << std::endl;;
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, bytesLen, nullptr);
+    }
+}
+
+void toggleHackWithHook(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
+                        const char* hackName, const char* oldBytes, const size_t& bytesLen)
+{
+    hackOption.first = !hackOption.first;
+    if (hackOption.first)
+    {
+        // allocate memory for new instructions
+        hookInfo.locAllocatedMemory = reinterpret_cast<uintptr_t>(VirtualAllocEx(
+            gameHandle, nullptr, 1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+
+        // calculate offset to allocated memory from original instruction
+        uintptr_t offsetToAllocatedMem{hookInfo.locAllocatedMemory - hackOption.second - 5};
+        // now add that offset after jmp instruction that is used where we hook from
+        memcpy(hookInfo.hookInstruction.data() + 1, &offsetToAllocatedMem, sizeof(uintptr_t));
+
+        // calculate offset back to original hook location from location of newly allocated memory
+        uintptr_t jumpBackAddress{
+            hackOption.second - hookInfo.locAllocatedMemory - hookInfo.jumpBackInstruction.size() + hookInfo.
+            hookInstruction.size()
+        };
+        // add that offset right after jmp instruction that will be used in newly allocated memory
+        memcpy(hookInfo.jumpBackInstruction.data() + (hookInfo.jumpBackInstruction.size() - 4), &jumpBackAddress,
+               sizeof(uintptr_t));
+
+        // now write new instructions + jump back instruction to the newly allocated memory
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hookInfo.locAllocatedMemory),
+                           hookInfo.jumpBackInstruction.data(), hookInfo.jumpBackInstruction.size(), nullptr);
+
+
+        std::cout << hackName << " hack activated" << std::endl;
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), hookInfo.hookInstruction.data(),
+                           bytesLen, nullptr);
+    }
+    else
+    {
+        // release the memory we allocated when activating the hack
+        VirtualFreeEx(gameHandle, reinterpret_cast<uintptr_t*>(hookInfo.locAllocatedMemory), 0,
+                      MEM_RELEASE);
+        hookInfo.locAllocatedMemory = NULL;
         std::cout << hackName << " hack deactivated" << std::endl;;
         WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, bytesLen, nullptr);
     }
