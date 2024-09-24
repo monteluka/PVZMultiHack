@@ -21,6 +21,15 @@ inline struct sHacks
     std::pair<bool, uintptr_t> oneHitKills{false, 0}; // multi address
 } hacks;
 
+struct sHookInfo
+{
+    sHookInfo(const char* hookInstructionBytes, const size_t& hookBytesLen, const char* jumpBackInstructionBytes,
+              const size_t& jumpBackBytesLen);
+    std::vector<BYTE> hookInstruction{};
+    std::vector<BYTE> jumpBackInstruction{};
+    uintptr_t locAllocatedMemory{NULL};
+};
+
 class GameInfo
 {
 public:

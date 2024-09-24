@@ -1,5 +1,19 @@
 ﻿#include "gameinfo.h"
 
+
+sHookInfo::sHookInfo(const char* hookInstructionBytes, const size_t& hookBytesLen, const char* jumpBackInstructionBytes,
+    const size_t& jumpBackBytesLen)
+{
+    for (size_t i {0}; i < hookBytesLen; ++i)
+    {
+        hookInstruction.push_back(hookInstructionBytes[i]);
+    }
+    for (size_t i {0}; i < jumpBackBytesLen; ++i)
+    {
+        jumpBackInstruction.push_back(jumpBackInstructionBytes[i]);
+    }
+}
+
 GameInfo::GameInfo(HANDLE hPVZ, MODULEENTRY32W mPVZ32) : m_hPVZ(hPVZ), m_mPVZ32(mPVZ32)
 {
     // populate all the addresses in hacks struct
