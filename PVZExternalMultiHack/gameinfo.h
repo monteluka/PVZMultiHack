@@ -12,13 +12,13 @@ inline struct sHacks
     std::pair<bool, uintptr_t> infiniteCoins{false, 0};
     std::pair<bool, uintptr_t> infiniteLawnMower{false, 0};
     std::pair<bool, uintptr_t> infiniteSun{false, 0};
-    std::pair<bool, uintptr_t> infinitePlantHealth{false, 0}; // multi address 
+    std::pair<bool, std::vector<uintptr_t>> infinitePlantHealth{ false, {} }; // multi address 
     std::pair<bool, uintptr_t> instantActivatePotatoMine{false, 0};
     std::pair<bool, uintptr_t> instantPlantRecharge{false, 0};
     std::pair<bool, uintptr_t> noChomperCooldown{false, 0};
     std::pair<bool, uintptr_t> plantAnywhere{false, 0};
     std::pair<bool, uintptr_t> noZombies{false, 0};
-    std::pair<bool, uintptr_t> oneHitKills{false, 0}; // multi address
+    std::pair<bool, std::vector<uintptr_t>> oneHitKills{false, 0}; // multi address
 } hacks;
 
 struct sHookInfo
