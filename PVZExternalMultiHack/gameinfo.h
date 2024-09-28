@@ -24,7 +24,7 @@ inline struct sHacks
 class GameInfo
 {
 public:
-    GameInfo(HANDLE hPVZ, MODULEENTRY32 mPVZ32);
+    GameInfo(const wchar_t* gameName);
     ~GameInfo();
 
     [[nodiscard]] const HANDLE& getRefToHandle() const { return m_hPVZ; }
@@ -33,4 +33,5 @@ public:
 private:
     HANDLE m_hPVZ{};
     MODULEENTRY32 m_mPVZ32{};
+    void populateHacks() const;
 };
