@@ -1,4 +1,4 @@
-#include <array>
+#include <vector>
 #include <iostream>
 #include <Windows.h>
 #include <TlHelp32.h>
@@ -8,6 +8,10 @@
 
 inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, const char* hackName,
                        const char* newBytes, const char* oldBytes, const size_t& bytesLen);
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, std::vector<uintptr_t>>& hackOption,
+                       const char* hackName,
+                       const std::vector<const char*> newBytes, const std::vector<const char*> oldBytes,
+                       const std::vector<size_t>& bytesLen);
 inline void toggleHackWithHook(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
                                const char* hackName, const char* oldBytes,
                                const size_t& bytesLen);
@@ -57,6 +61,8 @@ int main()
     // instantiate hook info structs for hacks that require custom code to run
     sHookInfo hiFastSunProduction("\xe9\xff\xff\xff\xff\x90", 6,
                                   "\xC7\x47\x58\x01\x00\x00\x00\xFF\x4F\x58\x8B\x77\x58\xE9\xFF\xFF\xFF\xFF", 18);
+    sHookInfo hiInfiniteCoins("\xe9\xff\xff\xff\xff\x90\x90\x90", 8,
+                              "\xC7\x41\x54\x9F\x86\x01\x00\x8B\x51\x54\x52\x8D\x44\x24\x30\xE9\xFF\xFF\xFF\xFF", 20);
     sHookInfo hiInfiniteSun("\xe9\xff\xff\xff\xff\x90", 6,
                             "\xC7\x87\x78\x55\x00\x00\x0F\x27\x00\x00\x8B\x87\x78\x55\x00\x00\xE9\xFF\xFF\xFF\xFF", 21);
     sHookInfo hiInstantPlantRecharge("\xe9\xff\xff\xff\xff\x90", 6,
@@ -88,7 +94,8 @@ int main()
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('5') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteCoins, "Infinite Coins", "", "", 0); // need to find addy
+            toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.infiniteCoins, hiInfiniteCoins, "Infinite coins",
+                               "\x8B\x51\x54\x52\x8D\x44\x24\x30", 8);
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('6') & 0x8000)
         {
@@ -102,8 +109,8 @@ int main()
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('8') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.infinitePlantHealth, "Infinite plant health", "", "", 0);
-            // multi address - not yet implemented
+            toggleHack(infoPVZ.getRefToHandle(), hacks.infinitePlantHealth, "Infinite plant health",
+                       {"\x90\x90\x90", "\x90\x90\x90\x90"}, {"\x29\x50\x40", "\x83\x46\x40\xFC"}, {3, 4});
         }
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('9') & 0x8000)
         {
@@ -133,8 +140,10 @@ int main()
         }
         if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('5') & 0x8000)
         {
-            toggleHack(infoPVZ.getRefToHandle(), hacks.oneHitKills, "One hit kills", "", "", 0);
-            // multi address - not yet implemented
+            toggleHack(infoPVZ.getRefToHandle(), hacks.oneHitKills, "One hit kills",
+                       {"\xBD\x00\x00\x00\x00\x90", "\xB9\x00\x00\x00\x00\x90", "\x90\x90\x90\x90\x90\x90"}, {
+                           "\x8B\xAF\xC8\x00\x00\x00", "\x8B\x8D\xD0\x00\x00\x00", "\x29\x86\xDC\x00\x00\x00"
+                       }, {6, 6, 6});
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
         Sleep(100);
@@ -156,6 +165,26 @@ inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, uintptr_t>& hac
     {
         std::cout << hackName << " hack deactivated" << std::endl;;
         WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second), oldBytes, bytesLen, nullptr);
+    }
+}
+
+inline void toggleHack(const HANDLE& gameHandle, std::pair<bool, std::vector<uintptr_t>>& hackOption,
+                       const char* hackName,
+                       const std::vector<const char*> newBytes, const std::vector<const char*> oldBytes,
+                       const std::vector<size_t>& bytesLen)
+{
+    hackOption.first = !hackOption.first;
+    if (hackOption.first)
+    {
+        std::cout << hackName << " hack activated" << std::endl;
+        for (size_t i{0}; i < hackOption.second.size(); ++i) WriteProcessMemory(
+            gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second[i]), newBytes[i], bytesLen[i], nullptr);
+    }
+    else
+    {
+        std::cout << hackName << " hack deactivated" << std::endl;;
+        for (size_t i{0}; i < hackOption.second.size(); ++i) WriteProcessMemory(
+            gameHandle, reinterpret_cast<uintptr_t*>(hackOption.second[i]), oldBytes[i], bytesLen[i], nullptr);
     }
 }
 
