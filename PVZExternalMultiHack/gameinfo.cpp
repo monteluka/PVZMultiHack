@@ -1,19 +1,5 @@
 ﻿#include "gameinfo.h"
 
-
-sHookInfo::sHookInfo(const char* hookInstructionBytes, const size_t& hookBytesLen, const char* jumpBackInstructionBytes,
-    const size_t& jumpBackBytesLen)
-{
-    for (size_t i {0}; i < hookBytesLen; ++i)
-    {
-        hookInstruction.push_back(hookInstructionBytes[i]);
-    }
-    for (size_t i {0}; i < jumpBackBytesLen; ++i)
-    {
-        jumpBackInstruction.push_back(jumpBackInstructionBytes[i]);
-    }
-}
-
 GameInfo::GameInfo(HANDLE hPVZ, MODULEENTRY32W mPVZ32) : m_hPVZ(hPVZ), m_mPVZ32(mPVZ32)
 {
     // populate all the addresses in hacks struct
@@ -29,7 +15,7 @@ GameInfo::GameInfo(HANDLE hPVZ, MODULEENTRY32W mPVZ32) : m_hPVZ(hPVZ), m_mPVZ32(
                                           });
     hacks.fastSunProduction.second = SigScan(hPVZ, m_mPVZ32, {0xFF, 0x4F, 0x58, 0x8B, 0x77, 0x58});
     hacks.instantHit.second = SigScan(hPVZ, m_mPVZ32, {0x7C, 0x1B, 0x83, 0x7C, 0x24, 0x18, 0x00});
-    hacks.infiniteCoins.second = SigScan(hPVZ, m_mPVZ32, { 0x8B, 0x51, 0x54, 0x52, 0x8D, 0x44, 0x24, 0x30 });
+    hacks.infiniteCoins.second = SigScan(hPVZ, m_mPVZ32, {0x8B, 0x51, 0x54, 0x52, 0x8D, 0x44, 0x24, 0x30});
     hacks.infiniteLawnMower.second = SigScan(hPVZ, m_mPVZ32, {
                                                  0xc7, 0x46, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x5f, 0x83, 0xc4
                                              });
@@ -46,12 +32,12 @@ GameInfo::GameInfo(HANDLE hPVZ, MODULEENTRY32W mPVZ32) : m_hPVZ(hPVZ), m_mPVZ32(
                                      });
 
     // ====================== multi address hacks ===========================
-    hacks.infinitePlantHealth.second.push_back(SigScan(hPVZ, m_mPVZ32, { 0x29, 0x50, 0x40, 0x83, 0xF9, 0x19 }));
-    hacks.infinitePlantHealth.second.push_back(SigScan(hPVZ, m_mPVZ32, { 0x83, 0x46, 0x40, 0xFC, 0x8B, 0x4E, 0x40 }));
+    hacks.infinitePlantHealth.second.push_back(SigScan(hPVZ, m_mPVZ32, {0x29, 0x50, 0x40, 0x83, 0xF9, 0x19}));
+    hacks.infinitePlantHealth.second.push_back(SigScan(hPVZ, m_mPVZ32, {0x83, 0x46, 0x40, 0xFC, 0x8B, 0x4E, 0x40}));
 
-    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, { 0x8B, 0xAF, 0xC8, 0x00, 0x00, 0x00, 0x8B }));
-    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, { 0x8B, 0x8D, 0xD0, 0x00, 0x00, 0x00, 0xB8 }));
-    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, { 0x29, 0x86, 0xDC, 0x00, 0x00, 0x00 }));
+    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, {0x8B, 0xAF, 0xC8, 0x00, 0x00, 0x00, 0x8B}));
+    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, {0x8B, 0x8D, 0xD0, 0x00, 0x00, 0x00, 0xB8}));
+    hacks.oneHitKills.second.push_back(SigScan(hPVZ, m_mPVZ32, {0x29, 0x86, 0xDC, 0x00, 0x00, 0x00}));
 }
 
 GameInfo::~GameInfo()
