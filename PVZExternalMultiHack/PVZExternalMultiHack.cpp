@@ -50,71 +50,71 @@ int main()
             break;
         
         // skeleton for hacks
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('1') & 0x8000)
+        if (std::get<0>(hacks.autoCollectItems))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.autoCollectItems, "Auto collect items", "\xeb", "\x75", 1);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('2') & 0x8000)
+        if (std::get<0>(hacks.bypassSunLimit))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.bypassSunLimit, "Bypass sun limit", "\xeb", "\x7e", 1);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('3') & 0x8000)
+        if (std::get<0>(hacks.fastSunProduction))
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.fastSunProduction, hiFastSunProduction,
                                "Fast sun production",
                                "\xFF\x4F\x58\x8B\x77\x58", 6);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('4') & 0x8000)
+        if (std::get<0>(hacks.instantHit))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.instantHit, "Instant hit", "\x90\x90", "\x7c\x1b", 2);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('5') & 0x8000)
+        if (std::get<0>(hacks.infiniteCoins))
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.infiniteCoins, hiInfiniteCoins, "Infinite coins",
                                "\x8B\x51\x54\x52\x8D\x44\x24\x30", 8);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('6') & 0x8000)
+        if (std::get<0>(hacks.infiniteLawnMower))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.infiniteLawnMower, "Infinite lawn mower",
                        "\x90\x90\x90\x90\x90\x90\x90", "\xc7\x46\x2c\x02\x00\x00\x00", 7);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('7') & 0x8000)
+        if (std::get<0>(hacks.infiniteSun))
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.infiniteSun, hiInfiniteSun, "Infinite sun",
                                "\x8B\x87\x78\x55\x00\x00", 6);
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('8') & 0x8000)
+        if (std::get<0>(hacks.infinitePlantHealth))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.infinitePlantHealth, "Infinite plant health",
                        {"\x90\x90\x90", "\x90\x90\x90\x90"}, {"\x29\x50\x40", "\x83\x46\x40\xFC"}, {3, 4});
         }
-        if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('9') & 0x8000)
+        if (std::get<0>(hacks.instantActivatePotatoMine))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.instantActivatePotatoMine, "Instant activate potato mine",
                        "\x90\x90\x90\x90\x90\x90",
                        "\x0f\x85\xfd\x01\x00\x00", 6);
         }
-        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('1') & 0x8000)
+        if (std::get<0>(hacks.instantPlantRecharge))
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.instantPlantRecharge, hiInstantPlantRecharge,
                                "Instant plant recharge", "\xFF\x47\x24\x8B\x47\x24", 6);
         }
-        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('2') & 0x8000)
+        if (std::get<0>(hacks.noChomperCooldown))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.noChomperCooldown, "No chomper cooldown", "\x90\x90", "\x75\x5f",
                        2);
         }
-        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('3') & 0x8000)
+        if (std::get<0>(hacks.plantAnywhere))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.plantAnywhere, "Plant anywhere", "\x0F\x84",
                        "\x0F\x85", 2);
         }
-        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('4') & 0x8000)
+        if (std::get<0>(hacks.noZombies))
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.noZombies, hiNoZombies, "No zombies",
                                "\x8B\x46\x14\xC1\xE0\x10", 6);
         }
-        if (GetKeyState(VK_MENU) & 0x8000 && GetKeyState('5') & 0x8000)
+        if (std::get<0>(hacks.oneHitKills))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.oneHitKills, "One hit kills",
                        {"\xBD\x00\x00\x00\x00\x90", "\xB9\x00\x00\x00\x00\x90", "\x90\x90\x90\x90\x90\x90"}, {
@@ -132,7 +132,20 @@ int main()
         ImGui::Begin("test", nullptr,
                      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse |
                      ImGuiWindowFlags_NoMove);
-        ImGui::Button("button");
+        if (ImGui::Checkbox("Auto Collect Items", &std::get<1>(hacks.autoCollectItems))) std::get<0>(hacks.autoCollectItems) = true;
+        if (ImGui::Checkbox("Bypass Sun Limit", &std::get<1>(hacks.bypassSunLimit))) std::get<0>(hacks.bypassSunLimit) = true;
+        if (ImGui::Checkbox("Fast Sun Production", &std::get<1>(hacks.fastSunProduction))) std::get<0>(hacks.fastSunProduction) = true;
+        if (ImGui::Checkbox("Instant Hit", &std::get<1>(hacks.instantHit))) std::get<0>(hacks.instantHit) = true;
+        if (ImGui::Checkbox("Infinite Coins", &std::get<1>(hacks.infiniteCoins))) std::get<0>(hacks.infiniteCoins) = true;
+        if (ImGui::Checkbox("Infinite Lawn Mower", &std::get<1>(hacks.infiniteLawnMower))) std::get<0>(hacks.infiniteLawnMower) = true;
+        if (ImGui::Checkbox("Infinite Sun", &std::get<1>(hacks.infiniteSun))) std::get<0>(hacks.infiniteSun) = true;
+        if (ImGui::Checkbox("Infinite Plant Health", &std::get<1>(hacks.infinitePlantHealth))) std::get<0>(hacks.infinitePlantHealth) = true;
+        if (ImGui::Checkbox("Instant Activate Potato Mine", &std::get<1>(hacks.instantActivatePotatoMine))) std::get<0>(hacks.instantActivatePotatoMine) = true;
+        if (ImGui::Checkbox("Instant Plant Recharge", &std::get<1>(hacks.instantPlantRecharge))) std::get<0>(hacks.instantPlantRecharge) = true;
+        if (ImGui::Checkbox("No Chomper Cooldown", &std::get<1>(hacks.noChomperCooldown))) std::get<0>(hacks.noChomperCooldown) = true;
+        if (ImGui::Checkbox("Plant Anywhere", &std::get<1>(hacks.plantAnywhere))) std::get<0>(hacks.plantAnywhere) = true;
+        if (ImGui::Checkbox("No Zombies", &std::get<1>(hacks.noZombies))) std::get<0>(hacks.noZombies) = true;
+        if (ImGui::Checkbox("One Hit Kills", &std::get<1>(hacks.oneHitKills))) std::get<0>(hacks.oneHitKills) = true;
         ImGui::End();
 
         gui::EndRender();

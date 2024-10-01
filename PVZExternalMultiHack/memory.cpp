@@ -36,7 +36,9 @@ uintptr_t SigScan(const HANDLE& gameHandle, const MODULEENTRY32W& me32, const st
 void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, const char* hackName,
                 const char* newBytes, const char* oldBytes, const size_t& bytesLen)
 {
-    std::get<1>(hackOption) = !std::get<1>(hackOption);
+    // make sure bool that holds if box was clicked is set to false
+    std::get<0>(hackOption) = false;
+    
     if (std::get<1>(hackOption))
     {
         std::cout << hackName << " hack activated" << std::endl;
@@ -56,7 +58,9 @@ void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, std::vector<uin
                 const std::vector<const char*> newBytes, const std::vector<const char*> oldBytes,
                 const std::vector<size_t>& bytesLen)
 {
-    std::get<1>(hackOption) = !std::get<1>(hackOption);
+    // make sure bool that holds if box was clicked is set to false
+    std::get<0>(hackOption) = false;
+    
     if (std::get<1>(hackOption))
     {
         std::cout << hackName << " hack activated" << std::endl;
@@ -78,7 +82,9 @@ void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, std::vector<uin
 void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
                         const char* hackName, const char* oldBytes, const size_t& bytesLen)
 {
-    std::get<1>(hackOption) = !std::get<1>(hackOption);
+    // make sure bool that holds if box was clicked is set to false
+    std::get<0>(hackOption) = false;
+
     if (std::get<1>(hackOption))
     {
         // allocate memory for new instructions
