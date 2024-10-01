@@ -19,8 +19,8 @@ namespace gui
     // globals for window
     inline WNDCLASSEXW wc;
     inline HWND hwnd;
-    inline constexpr int WINDOW_WIDTH = 240; 
-    inline constexpr int WINDOW_HEIGHT = 160; 
+    inline constexpr int WINDOW_WIDTH = 1280; 
+    inline constexpr int WINDOW_HEIGHT = 720; 
     
 
     bool CreateDeviceD3D();

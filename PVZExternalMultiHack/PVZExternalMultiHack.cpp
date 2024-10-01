@@ -1,15 +1,22 @@
 #include <vector>
 #include <iostream>
 #include <Windows.h>
-#include <TlHelp32.h>
 
 #include "gameinfo.h"
+#include "gui.h"
 #include "memory.h"
 
 int main()
 {
+    // create window for hack gui
+    gui::CreateAppWindow(L"PVZ Multihack", L"PVZ Multihack Class");
+    // initialize d3d
+    gui::CreateDeviceD3D();
+    // create imgui context
+    gui::CreateImGui();
+
     // instantiate GameInfo class for PVZ
-    const GameInfo infoPVZ (L"popcapgame1.exe");
+    const GameInfo infoPVZ(L"popcapgame1.exe");
 
     // instantiate hook info structs for hacks that require custom code to run
     sHookInfo hiFastSunProduction("\xe9\xff\xff\xff\xff\x90", 6,
@@ -23,9 +30,25 @@ int main()
     sHookInfo hiNoZombies("\xe9\xff\xff\xff\xff\x90", 6,
                           "\xB8\x00\x00\x00\x00\xC1\xE0\x10\xE9\xFF\xFF\xFF\xFF", 13);
 
+    // set loop condition
+    bool running {true};
     // start hack loop
-    for (;;)
+    while (running)
     {
+        // Poll and handle messages (inputs, window resize, etc.)
+        // See the WndProc() function below for our to dispatch events to the Win32 backend.
+        // if window gets closed then break out of loop
+        MSG msg;
+        while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+                running = false;
+        }
+        if (!running)
+            break;
+        
         // skeleton for hacks
         if (GetKeyState(VK_CONTROL) & 0x8000 && GetKeyState('1') & 0x8000)
         {
@@ -99,8 +122,27 @@ int main()
                        }, {6, 6, 6});
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
+
+        // imgui window stuff
+        gui::BeginRender();
+
+        // window stuff
+        ImGui::SetNextWindowPos({0, 0});
+        ImGui::SetNextWindowSize({gui::WINDOW_WIDTH, gui::WINDOW_HEIGHT});
+        ImGui::Begin("test", nullptr,
+                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoMove);
+        ImGui::Button("button");
+        ImGui::End();
+
+        gui::EndRender();
         Sleep(100);
     }
+
+    // cleanup
+    gui::DestroyImGui();
+    gui::CleanupDeviceD3D();
+    gui::DestroyAppWindow();
 
     return 0;
 }

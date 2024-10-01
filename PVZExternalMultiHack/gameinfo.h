@@ -1,24 +1,26 @@
 ﻿#pragma once
 #include "memory.h"
+#include <tuple>
 
-// bool will determine if hack is enabled or enabled
-// uinptr_t holds the location in memory that stores the bytes we want to modify for the hack
+// <0> holds the "was checked" value for the menu
+// <1> will determine if hack is enabled or enabled
+// <2> holds the location in memory that stores the bytes we want to modify for the hack
 inline struct sHacks
 {
-    std::pair<bool, uintptr_t> autoCollectItems{false, 0};
-    std::pair<bool, uintptr_t> bypassSunLimit{false, 0};
-    std::pair<bool, uintptr_t> fastSunProduction{false, 0};
-    std::pair<bool, uintptr_t> instantHit{false, 0};
-    std::pair<bool, uintptr_t> infiniteCoins{false, 0};
-    std::pair<bool, uintptr_t> infiniteLawnMower{false, 0};
-    std::pair<bool, uintptr_t> infiniteSun{false, 0};
-    std::pair<bool, std::vector<uintptr_t>> infinitePlantHealth{false, {}}; // multi address 
-    std::pair<bool, uintptr_t> instantActivatePotatoMine{false, 0};
-    std::pair<bool, uintptr_t> instantPlantRecharge{false, 0};
-    std::pair<bool, uintptr_t> noChomperCooldown{false, 0};
-    std::pair<bool, uintptr_t> plantAnywhere{false, 0};
-    std::pair<bool, uintptr_t> noZombies{false, 0};
-    std::pair<bool, std::vector<uintptr_t>> oneHitKills{false, {}}; // multi address
+    std::tuple<bool, bool, uintptr_t> autoCollectItems{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> bypassSunLimit{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> fastSunProduction{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> instantHit{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> infiniteCoins{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> infiniteLawnMower{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> infiniteSun{false, false, 0};
+    std::tuple<bool, bool, std::vector<uintptr_t>> infinitePlantHealth{false, false, {}}; // multi address 
+    std::tuple<bool, bool, uintptr_t> instantActivatePotatoMine{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> instantPlantRecharge{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> noChomperCooldown{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> plantAnywhere{false, false, 0};
+    std::tuple<bool, bool, uintptr_t> noZombies{false, false, 0};
+    std::tuple<bool, bool, std::vector<uintptr_t>> oneHitKills{false, false, {}}; // multi address
 } hacks;
 
 class GameInfo

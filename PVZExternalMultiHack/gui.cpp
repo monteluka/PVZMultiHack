@@ -112,7 +112,7 @@ void gui::CreateAppWindow(const wchar_t* windowName, const wchar_t* className)
     ::RegisterClassExW(&wc);
 
     // create the window
-    hwnd = ::CreateWindowW(wc.lpszClassName, windowName, WS_POPUPWINDOW, 100, 100, WINDOW_WIDTH,
+    hwnd = ::CreateWindowW(wc.lpszClassName, windowName, WS_OVERLAPPEDWINDOW, 100, 100, WINDOW_WIDTH,
                            WINDOW_HEIGHT, nullptr, nullptr, wc.hInstance, nullptr);
 
     // Show the window
