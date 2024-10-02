@@ -103,16 +103,20 @@ LRESULT __stdcall gui::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 void gui::CreateAppWindow(const wchar_t* windowName, const wchar_t* className)
 {
-    // initialize window class struct
+    // initialize windowclass struct
     wc = {
         sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
         className, nullptr
     };
 
+    // load icon for window
+    wc.hIcon = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+
     ::RegisterClassExW(&wc);
 
     // create the window
-    hwnd = ::CreateWindowW(wc.lpszClassName, windowName, WS_OVERLAPPEDWINDOW, 100, 100, WINDOW_WIDTH,
+    hwnd = ::CreateWindowW(wc.lpszClassName, windowName, WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 100, 100,
+                           WINDOW_WIDTH,
                            WINDOW_HEIGHT, nullptr, nullptr, wc.hInstance, nullptr);
 
     // Show the window
@@ -131,14 +135,9 @@ void gui::CreateImGui()
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
 
-    io.IniFilename = NULL; // prevent making a config file
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    io = &ImGui::GetIO();
+    io->IniFilename = NULL; // prevent making a config file
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -173,7 +172,8 @@ void gui::BeginRender()
 void gui::EndRender()
 {
     ImGui::Render();
-    constexpr float clear_color_with_alpha[4] = {0, 0, 0, 255};
+    // set color of background
+    constexpr float clear_color_with_alpha[4] = {138, 76, 76, 255};
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
     g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -181,4 +181,26 @@ void gui::EndRender()
     HRESULT hr = g_pSwapChain->Present(1, 0); // Present with vsync
     //HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
     g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
+}
+
+void gui::ApplyStyles()
+{
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    ImGuiStyle& style{ImGui::GetStyle()};
+    auto& colors = style.Colors;
+
+    colors[ImGuiCol_ResizeGrip] = ImColor(0, 0, 0, 0);
+    colors[ImGuiCol_ResizeGripActive] = ImColor(0, 0, 0, 0);
+    colors[ImGuiCol_ResizeGripHovered] = ImColor(0, 0, 0, 0);
+
+    // color of checkmark
+    colors[ImGuiCol_CheckMark] = ImColor(0, 118, 209, 255);
+
+    // color of box checkmark is in
+    colors[ImGuiCol_FrameBg] = ImColor(60, 60, 60);
+    colors[ImGuiCol_FrameBgActive] = ImColor(26, 26, 26);
+    colors[ImGuiCol_FrameBgHovered] = ImColor(26, 26, 26);
 }

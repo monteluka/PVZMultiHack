@@ -5,6 +5,7 @@
 #include "gameinfo.h"
 #include "gui.h"
 #include "memory.h"
+#include "imgui/imgui_internal.h"
 
 int main()
 {
@@ -14,6 +15,8 @@ int main()
     gui::CreateDeviceD3D();
     // create imgui context
     gui::CreateImGui();
+    // apply styles
+    gui::ApplyStyles();
 
     // instantiate GameInfo class for PVZ
     const GameInfo infoPVZ(L"popcapgame1.exe");
@@ -31,7 +34,7 @@ int main()
                           "\xB8\x00\x00\x00\x00\xC1\xE0\x10\xE9\xFF\xFF\xFF\xFF", 13);
 
     // set loop condition
-    bool running {true};
+    bool running{true};
     // start hack loop
     while (running)
     {
@@ -48,7 +51,7 @@ int main()
         }
         if (!running)
             break;
-        
+
         // skeleton for hacks
         if (std::get<0>(hacks.autoCollectItems))
         {
@@ -123,33 +126,54 @@ int main()
         }
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
 
-        // imgui window stuff
+        // imgui window initialization
         gui::BeginRender();
 
         // window stuff
         ImGui::SetNextWindowPos({0, 0});
         ImGui::SetNextWindowSize({gui::WINDOW_WIDTH, gui::WINDOW_HEIGHT});
-        ImGui::Begin("test", nullptr,
-                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse |
-                     ImGuiWindowFlags_NoMove);
-        if (ImGui::Checkbox("Auto Collect Items", &std::get<1>(hacks.autoCollectItems))) std::get<0>(hacks.autoCollectItems) = true;
-        if (ImGui::Checkbox("Bypass Sun Limit", &std::get<1>(hacks.bypassSunLimit))) std::get<0>(hacks.bypassSunLimit) = true;
-        if (ImGui::Checkbox("Fast Sun Production", &std::get<1>(hacks.fastSunProduction))) std::get<0>(hacks.fastSunProduction) = true;
+        ImGui::Begin("PVZ Multi Hack", nullptr,
+                     ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoTitleBar);
+        // create left side of window
+        ImGui::BeginChild("##left_side",
+                          ImVec2(ImGui::GetContentRegionAvail().x / 2.0f, ImGui::GetContentRegionAvail().y));
+        if (ImGui::Checkbox("Auto Collect Items", &std::get<1>(hacks.autoCollectItems))) std::get<0>(
+            hacks.autoCollectItems) = true;
+        if (ImGui::Checkbox("Bypass Sun Limit", &std::get<1>(hacks.bypassSunLimit))) std::get<0>(hacks.bypassSunLimit) =
+            true;
+        if (ImGui::Checkbox("Fast Sun Production", &std::get<1>(hacks.fastSunProduction))) std::get<0>(
+            hacks.fastSunProduction) = true;
         if (ImGui::Checkbox("Instant Hit", &std::get<1>(hacks.instantHit))) std::get<0>(hacks.instantHit) = true;
-        if (ImGui::Checkbox("Infinite Coins", &std::get<1>(hacks.infiniteCoins))) std::get<0>(hacks.infiniteCoins) = true;
-        if (ImGui::Checkbox("Infinite Lawn Mower", &std::get<1>(hacks.infiniteLawnMower))) std::get<0>(hacks.infiniteLawnMower) = true;
+        if (ImGui::Checkbox("Infinite Coins", &std::get<1>(hacks.infiniteCoins))) std::get<0>(hacks.infiniteCoins) =
+            true;
+        if (ImGui::Checkbox("Infinite Lawn Mower", &std::get<1>(hacks.infiniteLawnMower))) std::get<0>(
+            hacks.infiniteLawnMower) = true;
         if (ImGui::Checkbox("Infinite Sun", &std::get<1>(hacks.infiniteSun))) std::get<0>(hacks.infiniteSun) = true;
-        if (ImGui::Checkbox("Infinite Plant Health", &std::get<1>(hacks.infinitePlantHealth))) std::get<0>(hacks.infinitePlantHealth) = true;
-        if (ImGui::Checkbox("Instant Activate Potato Mine", &std::get<1>(hacks.instantActivatePotatoMine))) std::get<0>(hacks.instantActivatePotatoMine) = true;
-        if (ImGui::Checkbox("Instant Plant Recharge", &std::get<1>(hacks.instantPlantRecharge))) std::get<0>(hacks.instantPlantRecharge) = true;
-        if (ImGui::Checkbox("No Chomper Cooldown", &std::get<1>(hacks.noChomperCooldown))) std::get<0>(hacks.noChomperCooldown) = true;
-        if (ImGui::Checkbox("Plant Anywhere", &std::get<1>(hacks.plantAnywhere))) std::get<0>(hacks.plantAnywhere) = true;
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+        ImGui::SameLine();
+
+        ImGui::BeginChild("##right_side", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
+        if (ImGui::Checkbox("Infinite Plant Health", &std::get<1>(hacks.infinitePlantHealth))) std::get<0>(
+            hacks.infinitePlantHealth) = true;
+        if (ImGui::Checkbox("Instant Activate Potato Mine", &std::get<1>(hacks.instantActivatePotatoMine))) std::get<0>(
+            hacks.instantActivatePotatoMine) = true;
+        if (ImGui::Checkbox("Instant Plant Recharge", &std::get<1>(hacks.instantPlantRecharge))) std::get<0>(
+            hacks.instantPlantRecharge) = true;
+        if (ImGui::Checkbox("No Chomper Cooldown", &std::get<1>(hacks.noChomperCooldown))) std::get<0>(
+            hacks.noChomperCooldown) = true;
         if (ImGui::Checkbox("No Zombies", &std::get<1>(hacks.noZombies))) std::get<0>(hacks.noZombies) = true;
         if (ImGui::Checkbox("One Hit Kills", &std::get<1>(hacks.oneHitKills))) std::get<0>(hacks.oneHitKills) = true;
+        if (ImGui::Checkbox("Plant Anywhere", &std::get<1>(hacks.plantAnywhere))) std::get<0>(hacks.plantAnywhere) =
+            true;
+        ImGui::EndChild();
         ImGui::End();
 
+        // imgui window cleanup
         gui::EndRender();
-        Sleep(100);
+        Sleep(10);
     }
 
     // cleanup
