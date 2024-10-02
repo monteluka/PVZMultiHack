@@ -7,7 +7,7 @@
 #include "memory.h"
 #include "imgui/imgui_internal.h"
 
-int main()
+int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arguments, int commandShow)
 {
     // create window for hack gui
     gui::CreateAppWindow(L"PVZ Multihack", L"PVZ Multihack Class");
