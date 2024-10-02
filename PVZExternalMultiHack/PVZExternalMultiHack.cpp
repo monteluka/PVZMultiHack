@@ -7,7 +7,7 @@
 #include "memory.h"
 #include "imgui/imgui_internal.h"
 
-int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arguments, int commandShow)
+int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arguments, int commandShow) try
 {
     // create window for hack gui
     gui::CreateAppWindow(L"PVZ Multihack", L"PVZ Multihack Class");
@@ -49,7 +49,7 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
             if (msg.message == WM_QUIT)
                 running = false;
         }
-        if (!running)
+        if (!running || !infoPVZ.isGameRunning())
             break;
 
         // skeleton for hacks
@@ -181,5 +181,10 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
     gui::CleanupDeviceD3D();
     gui::DestroyAppWindow();
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+catch (std::runtime_error& e)
+{
+    MessageBoxA(0, e.what(), "ERROR", 0);
+    return EXIT_FAILURE;
 }

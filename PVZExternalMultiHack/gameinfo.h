@@ -26,11 +26,12 @@ inline struct sHacks
 class GameInfo
 {
 public:
-    GameInfo(const wchar_t* gameName);
+    explicit GameInfo(const wchar_t* gameName);
     ~GameInfo();
 
     [[nodiscard]] const HANDLE& getRefToHandle() const { return m_hPVZ; }
     [[nodiscard]] uintptr_t getModuleBaseAddress() const { return reinterpret_cast<uintptr_t>(m_mPVZ32.modBaseAddr); }
+    [[nodiscard]] bool isGameRunning() const;
 
 private:
     HANDLE m_hPVZ{};
