@@ -106,6 +106,7 @@
     <ClCompile Include="PVZExternalMultiHack.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fonts.h" />
     <ClInclude Include="gameinfo.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="imgui\imconfig.h" />

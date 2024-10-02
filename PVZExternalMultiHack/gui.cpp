@@ -185,6 +185,11 @@ void gui::EndRender()
 
 void gui::ApplyStyles()
 {
+    // set up fonts
+    ImFontConfig cfg;
+    cfg.FontDataOwnedByAtlas = false;
+    io->Fonts->AddFontFromMemoryTTF(fontFira, sizeof(fontFira), 16.0f, &cfg);
+    
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();

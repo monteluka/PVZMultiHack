@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "fonts.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
@@ -20,7 +21,7 @@ namespace gui
     // globals for window
     inline WNDCLASSEXW wc;
     inline HWND hwnd;
-    inline constexpr int WINDOW_WIDTH = 540;
+    inline constexpr int WINDOW_WIDTH = 560;
     inline constexpr int WINDOW_HEIGHT = 260;
     inline ImGuiIO* io{nullptr};
 
