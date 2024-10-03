@@ -49,8 +49,11 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
             if (msg.message == WM_QUIT)
                 running = false;
         }
-        if (!running || !infoPVZ.isGameRunning())
+        if (!infoPVZ.isGameRunning())
             break;
+
+        if (!running)
+            disableAllHacks();
 
         // skeleton for hacks
         if (std::get<0>(hacks.autoCollectItems))
@@ -131,7 +134,7 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
             std::get<0>(hacks.fastSunProduction) = true;
         if (ImGui::Checkbox("Instant Hit", &std::get<1>(hacks.instantHit))) std::get<0>(hacks.instantHit) = true;
         if (ImGui::Checkbox("Infinite Coins", &std::get<1>(hacks.infiniteCoins)))
-            std::get<0>(hacks.infiniteCoins) =true;
+            std::get<0>(hacks.infiniteCoins) = true;
         if (ImGui::Checkbox("Infinite Lawn Mower", &std::get<1>(hacks.infiniteLawnMower)))
             std::get<0>(hacks.infiniteLawnMower) = true;
         if (ImGui::Checkbox("Infinite Sun", &std::get<1>(hacks.infiniteSun))) std::get<0>(hacks.infiniteSun) = true;
@@ -160,6 +163,7 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
 
         // imgui window cleanup
         gui::EndRender();
+        if (!running) break;
         Sleep(10);
     }
 

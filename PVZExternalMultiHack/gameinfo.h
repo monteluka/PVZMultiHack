@@ -41,3 +41,5 @@ private:
     MODULEENTRY32 m_mPVZ32{};
     void populateHacks() const;
 };
+
+void disableAllHacks();

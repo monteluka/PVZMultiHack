@@ -175,3 +175,78 @@ void GameInfo::populateHacks() const
     std::get<5>(hacks.infinitePlantHealth) = {3, 4};
     std::get<5>(hacks.oneHitKills) = {6, 6, 6};
 }
+
+void disableAllHacks()
+{
+    
+        if (std::get<1>(hacks.autoCollectItems))
+        {
+            std::get<0>(hacks.autoCollectItems) = true;
+            std::get<1>(hacks.autoCollectItems) = false;
+        }
+        if (std::get<1>(hacks.bypassSunLimit))
+        {
+            std::get<0>(hacks.bypassSunLimit) = true;
+            std::get<1>(hacks.bypassSunLimit) = false;
+        }
+        if (std::get<1>(hacks.fastSunProduction))
+        {
+            std::get<0>(hacks.fastSunProduction) = true;
+            std::get<1>(hacks.fastSunProduction) = false;
+        }
+        if (std::get<1>(hacks.instantHit))
+        {
+            std::get<0>(hacks.instantHit) = true;
+            std::get<1>(hacks.instantHit) = false;
+        }
+        if (std::get<1>(hacks.infiniteCoins))
+        {
+            std::get<0>(hacks.infiniteCoins) = true;
+            std::get<1>(hacks.infiniteCoins) = false;
+        }
+        if (std::get<1>(hacks.infiniteLawnMower))
+        {
+            std::get<0>(hacks.infiniteLawnMower) = true;
+            std::get<1>(hacks.infiniteLawnMower) = false;
+        }
+        if (std::get<1>(hacks.infiniteSun))
+        {
+            std::get<0>(hacks.infiniteSun) = true;
+            std::get<1>(hacks.infiniteSun) = false;
+        }
+        if (std::get<1>(hacks.infinitePlantHealth))
+        {
+            std::get<0>(hacks.infinitePlantHealth) = true;
+            std::get<1>(hacks.infinitePlantHealth) = false;
+        }
+        if (std::get<1>(hacks.instantActivatePotatoMine))
+        {
+            std::get<0>(hacks.instantActivatePotatoMine) = true;
+            std::get<1>(hacks.instantActivatePotatoMine) = false;
+        }
+        if (std::get<1>(hacks.instantPlantRecharge))
+        {
+            std::get<0>(hacks.instantPlantRecharge) = true;
+            std::get<1>(hacks.instantPlantRecharge) = false;
+        }
+        if (std::get<1>(hacks.noChomperCooldown))
+        {
+            std::get<0>(hacks.noChomperCooldown) = true;
+            std::get<1>(hacks.noChomperCooldown) = false;
+        }
+        if (std::get<1>(hacks.plantAnywhere))
+        {
+            std::get<0>(hacks.plantAnywhere) = true;
+            std::get<1>(hacks.plantAnywhere) = false;
+        }
+        if (std::get<1>(hacks.noZombies))
+        {
+            std::get<0>(hacks.noZombies) = true;
+            std::get<1>(hacks.noZombies) = false;
+        }
+        if (std::get<1>(hacks.oneHitKills))
+        {
+            std::get<0>(hacks.oneHitKills) = true;
+            std::get<1>(hacks.oneHitKills) = false;
+        }
+}
