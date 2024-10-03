@@ -33,54 +33,54 @@ uintptr_t SigScan(const HANDLE& gameHandle, const MODULEENTRY32W& me32, const st
     return -1;
 }
 
-void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, const char* hackName,
-                const char* newBytes, const char* oldBytes, const size_t& bytesLen)
+void toggleHack(const HANDLE& gameHandle,
+                std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t>& hackOption)
 {
     // make sure bool that holds if box was clicked is set to false
     std::get<0>(hackOption) = false;
-    
+
     if (std::get<1>(hackOption))
     {
-        std::cout << hackName << " hack activated" << std::endl;
-        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<uintptr_t>(hackOption)), newBytes,
-                           bytesLen, nullptr);
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)),
+                           std::get<3>(hackOption),
+                           std::get<5>(hackOption), nullptr);
     }
     else
     {
-        std::cout << hackName << " hack deactivated" << std::endl;;
-        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<uintptr_t>(hackOption)), oldBytes,
-                           bytesLen, nullptr);
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)),
+                           std::get<4>(hackOption),
+                           std::get<5>(hackOption), nullptr);
     }
 }
 
-void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, std::vector<uintptr_t>>& hackOption,
-                const char* hackName,
-                const std::vector<const char*> newBytes, const std::vector<const char*> oldBytes,
-                const std::vector<size_t>& bytesLen)
+void toggleHack(const HANDLE& gameHandle,
+                std::tuple<bool, bool, std::vector<uintptr_t>, std::vector<const char*>,
+                std::vector<const char*>, std::vector<size_t>>& hackOption)
 {
     // make sure bool that holds if box was clicked is set to false
     std::get<0>(hackOption) = false;
-    
+
     if (std::get<1>(hackOption))
     {
-        std::cout << hackName << " hack activated" << std::endl;
-        for (size_t i{0}; i < std::get<std::vector<uintptr_t>>(hackOption).size(); ++i)
+        for (size_t i{0}; i < std::get<2>(hackOption).size(); ++i)
             WriteProcessMemory(
-                gameHandle, reinterpret_cast<uintptr_t*>(std::get<std::vector<uintptr_t>>(hackOption)[i]), newBytes[i],
-                bytesLen[i], nullptr);
+                gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)[i]),
+                std::get<3>(hackOption)[i],
+                std::get<5>(hackOption)[i], nullptr);
     }
     else
     {
-        std::cout << hackName << " hack deactivated" << std::endl;;
-        for (size_t i{0}; i < std::get<std::vector<uintptr_t>>(hackOption).size(); ++i)
+        for (size_t i{0}; i < std::get<2>(hackOption).size(); ++i)
             WriteProcessMemory(
-                gameHandle, reinterpret_cast<uintptr_t*>(std::get<std::vector<uintptr_t>>(hackOption)[i]), oldBytes[i],
-                bytesLen[i], nullptr);
+                gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)[i]),
+                std::get<4>(hackOption)[i],
+                std::get<5>(hackOption)[i], nullptr);
     }
 }
 
-void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
-                        const char* hackName, const char* oldBytes, const size_t& bytesLen)
+void toggleHackWithHook(const HANDLE& gameHandle,
+                        std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t>& hackOption,
+                        sHookInfo& hookInfo)
 {
     // make sure bool that holds if box was clicked is set to false
     std::get<0>(hackOption) = false;
@@ -92,13 +92,13 @@ void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr
             gameHandle, nullptr, 1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
 
         // calculate offset to allocated memory from original instruction
-        uintptr_t offsetToAllocatedMem{hookInfo.locAllocatedMemory - std::get<uintptr_t>(hackOption) - 5};
+        uintptr_t offsetToAllocatedMem{hookInfo.locAllocatedMemory - std::get<2>(hackOption) - 5};
         // now add that offset after jmp instruction that is used where we hook from
         memcpy(hookInfo.hookInstruction.data() + 1, &offsetToAllocatedMem, sizeof(uintptr_t));
 
         // calculate offset back to original hook location from location of newly allocated memory
         uintptr_t jumpBackAddress{
-            std::get<uintptr_t>(hackOption) - hookInfo.locAllocatedMemory - hookInfo.jumpBackInstruction.size() +
+            std::get<2>(hackOption) - hookInfo.locAllocatedMemory - hookInfo.jumpBackInstruction.size() +
             hookInfo.
             hookInstruction.size()
         };
@@ -111,10 +111,9 @@ void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr
                            hookInfo.jumpBackInstruction.data(), hookInfo.jumpBackInstruction.size(), nullptr);
 
 
-        std::cout << hackName << " hack activated" << std::endl;
-        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<uintptr_t>(hackOption)),
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)),
                            hookInfo.hookInstruction.data(),
-                           bytesLen, nullptr);
+                           std::get<5>(hackOption), nullptr);
     }
     else
     {
@@ -122,8 +121,8 @@ void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr
         VirtualFreeEx(gameHandle, reinterpret_cast<uintptr_t*>(hookInfo.locAllocatedMemory), 0,
                       MEM_RELEASE);
         hookInfo.locAllocatedMemory = NULL;
-        std::cout << hackName << " hack deactivated" << std::endl;;
-        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<uintptr_t>(hackOption)), oldBytes,
-                           bytesLen, nullptr);
+        WriteProcessMemory(gameHandle, reinterpret_cast<uintptr_t*>(std::get<2>(hackOption)),
+                           std::get<4>(hackOption),
+                           std::get<5>(hackOption), nullptr);
     }
 }

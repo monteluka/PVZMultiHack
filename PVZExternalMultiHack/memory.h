@@ -16,14 +16,13 @@ struct sHookInfo
 
 uintptr_t SigScan(const HANDLE& gameHandle, const MODULEENTRY32W& me32, const std::vector<WORD>& sig);
 
-void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, const char* hackName,
-                const char* newBytes, const char* oldBytes, const size_t& bytesLen);
+void toggleHack(const HANDLE& gameHandle,
+                std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t>& hackOption);
 
-void toggleHack(const HANDLE& gameHandle, std::tuple<bool, bool, std::vector<uintptr_t>>& hackOption,
-                const char* hackName,
-                const std::vector<const char*> newBytes, const std::vector<const char*> oldBytes,
-                const std::vector<size_t>& bytesLen);
+void toggleHack(const HANDLE& gameHandle,
+                std::tuple<bool, bool, std::vector<uintptr_t>, std::vector<const char*>,
+                std::vector<const char*>, std::vector<size_t>>& hackOption);
 
-void toggleHackWithHook(const HANDLE& gameHandle, std::tuple<bool, bool, uintptr_t>& hackOption, sHookInfo& hookInfo,
-                        const char* hackName, const char* oldBytes,
-                        const size_t& bytesLen);
+void toggleHackWithHook(const HANDLE& gameHandle,
+                        std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t>& hackOption,
+                        sHookInfo& hookInfo);

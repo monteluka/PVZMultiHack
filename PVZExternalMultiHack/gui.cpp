@@ -1,4 +1,8 @@
 ﻿#include "gui.h"
+#include "fonts.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx11.h"
+#include "resource.h"
 
 bool gui::CreateDeviceD3D()
 {
@@ -97,6 +101,7 @@ LRESULT __stdcall gui::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
     case WM_DESTROY:
         ::PostQuitMessage(0);
         return 0;
+    default: break;
     }
     return ::DefWindowProcW(hWnd, msg, wParam, lParam);
 }
