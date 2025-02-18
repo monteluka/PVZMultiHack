@@ -96,9 +96,17 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
         {
             toggleHackWithHook(infoPVZ.getRefToHandle(), hacks.instantPlantRecharge, hiInstantPlantRecharge);
         }
+        if (std::get<0>(hacks.noCobCannonCooldown))
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.noCobCannonCooldown);
+        }
         if (std::get<0>(hacks.noChomperCooldown))
         {
             toggleHack(infoPVZ.getRefToHandle(), hacks.noChomperCooldown);
+        }
+        if (std::get<0>(hacks.noMagnetShroomCooldown))
+        {
+            toggleHack(infoPVZ.getRefToHandle(), hacks.noMagnetShroomCooldown);
         }
         if (std::get<0>(hacks.plantAnywhere))
         {
@@ -132,26 +140,32 @@ int __stdcall wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR arg
             std::get<0>(hacks.bypassSunLimit) = true;
         if (ImGui::Checkbox("Fast Sun Production", &std::get<1>(hacks.fastSunProduction)))
             std::get<0>(hacks.fastSunProduction) = true;
-        if (ImGui::Checkbox("Instant Hit", &std::get<1>(hacks.instantHit))) std::get<0>(hacks.instantHit) = true;
+        if (ImGui::Checkbox("Instant Hit", &std::get<1>(hacks.instantHit)))
+            std::get<0>(hacks.instantHit) = true;
         if (ImGui::Checkbox("Infinite Coins", &std::get<1>(hacks.infiniteCoins)))
             std::get<0>(hacks.infiniteCoins) = true;
         if (ImGui::Checkbox("Infinite Lawn Mower", &std::get<1>(hacks.infiniteLawnMower)))
             std::get<0>(hacks.infiniteLawnMower) = true;
-        if (ImGui::Checkbox("Infinite Sun", &std::get<1>(hacks.infiniteSun))) std::get<0>(hacks.infiniteSun) = true;
+        if (ImGui::Checkbox("Infinite Sun", &std::get<1>(hacks.infiniteSun)))
+            std::get<0>(hacks.infiniteSun) = true;
+        if (ImGui::Checkbox("Infinite Plant Health", &std::get<1>(hacks.infinitePlantHealth)))
+            std::get<0>(hacks.infinitePlantHealth) = true;
         ImGui::EndChild();
 
         ImGui::SameLine();
         ImGui::SameLine();
 
         ImGui::BeginChild("##right_side", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
-        if (ImGui::Checkbox("Infinite Plant Health", &std::get<1>(hacks.infinitePlantHealth)))
-            std::get<0>(hacks.infinitePlantHealth) = true;
         if (ImGui::Checkbox("Instant Activate Potato Mine", &std::get<1>(hacks.instantActivatePotatoMine)))
             std::get<0>(hacks.instantActivatePotatoMine) = true;
         if (ImGui::Checkbox("Instant Plant Recharge", &std::get<1>(hacks.instantPlantRecharge)))
             std::get<0>(hacks.instantPlantRecharge) = true;
+        if (ImGui::Checkbox("No Cob Cannon Cooldown", &std::get<1>(hacks.noCobCannonCooldown)))
+            std::get<0>(hacks.noCobCannonCooldown) = true;
         if (ImGui::Checkbox("No Chomper Cooldown", &std::get<1>(hacks.noChomperCooldown)))
             std::get<0>(hacks.noChomperCooldown) = true;
+        if (ImGui::Checkbox("No Magnet Shroom Cooldown", &std::get<1>(hacks.noMagnetShroomCooldown)))
+            std::get<0>(hacks.noMagnetShroomCooldown) = true;
         if (ImGui::Checkbox("No Zombies", &std::get<1>(hacks.noZombies)))
             std::get<0>(hacks.noZombies) = true;
         if (ImGui::Checkbox("One Hit Kills", &std::get<1>(hacks.oneHitKills)))

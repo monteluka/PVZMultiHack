@@ -20,7 +20,9 @@ inline struct sHacks
     std::tuple<bool, bool, std::vector<uintptr_t>, std::vector<const char*>, std::vector<const char*>, std::vector<size_t>> infinitePlantHealth{false, false, {}, {}, {}, {}}; // multi address 
     std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> instantActivatePotatoMine{false, false, 0, nullptr, nullptr, 0};
     std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> instantPlantRecharge{false, false, 0, nullptr, nullptr, 0};
+    std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> noCobCannonCooldown{false, false, 0, nullptr, nullptr, 0};
     std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> noChomperCooldown{false, false, 0, nullptr, nullptr, 0};
+    std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> noMagnetShroomCooldown{false, false, 0, nullptr, nullptr, 0};
     std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> plantAnywhere{false, false, 0, nullptr, nullptr, 0};
     std::tuple<bool, bool, uintptr_t, const char*, const char*, size_t> noZombies{false, false, 0, nullptr, nullptr, 0};
     std::tuple<bool, bool, std::vector<uintptr_t>, std::vector<const char*>, std::vector<const char*>, std::vector<size_t>> oneHitKills{false, false, {}, {}, {}, {}}; // multi address
